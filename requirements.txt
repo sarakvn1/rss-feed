@@ -1,0 +1,23 @@
+django==3.2
+djangorestframework==3.12.4
+djangorestframework-simplejwt==4.6.0  # or pyJWT
+django-cors-headers==3.7.0
+model-bakery
+requests
+redis==3.5.3
+django-redis==4.12.1
+querystring-parser==1.2.4
+python-dotenv==0.17.0
+#mysqlclient==2.0.3
+sentry-sdk==0.10.2
+pika==1.2.0
+loguru
+cryptography
+dnspython
+pymongo
+django-sentry-400-middleware
+pycryptodome
+django-health-check==3.16.5
+amqp==5.1.0
+kombu==5.2.4
+
