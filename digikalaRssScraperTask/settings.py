@@ -9,24 +9,34 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
+from pathlib import Path
+from datetime import timedelta
+from celery.schedules import crontab
+from os import environ
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent
+print(BASE_DIR)
+# Load environment variables
+load_dotenv(BASE_DIR.parent.joinpath('settings.env'))
+
+SECRET_KEY = environ.get('SECRET_KEY')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1vyo((=*fug#$*)*+0n%b$l)t8!#2=u+^4x615s^^+)#s_^p)5'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -39,12 +49,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'main'
+    'main',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -73,7 +85,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'digikalaRssScraperTask.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -83,7 +94,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -103,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -115,13 +124,63 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Cors
+CORS_ORIGIN_ALLOW_ALL = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'trader.throttle.GlobalThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'global': environ.get('GLOBAL_THROTTLE', '5000/day'),
+    },
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+
+}
+# celery
+CELERY_BROKER_URL = environ.get("CELERY_BROKER_URL")
+REDIS_URL = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_WORKER_CONCURRENCY = 4
+if USE_TZ:
+    CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    "do_scrapping": {
+        "task": "main.scrapper.do_scrapping_with_retry",
+        "schedule": timedelta(seconds=10),
+        "options": {
+            'expires': 10,
+        },
+    },
+    # # update market
+    # "kucoin_ticker_crawler": {
+    #     "task": "market.crawler.kucoin_ticker_crawler",
+    #     "schedule": crontab(hour='3', minute='0'),
+    #     "options": {
+    #         'expires': 60 * 60,
+    #     },
+    # },
+    # # finish position
+    # "finish_positions": {
+    #     "task": "coordinator.tasks.finish_positions",
+    #     "schedule": timedelta(seconds=60),
+    #     "options": {
+    #         'expires': 30,
+    #     },
+    # },
+}
