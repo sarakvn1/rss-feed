@@ -23,4 +23,5 @@ kombu==5.2.4
 beautifulsoup4==4.11.1
 django-celery-beat==2.2.1
 flower==1.0.0
+feedparser==6.0.10
 

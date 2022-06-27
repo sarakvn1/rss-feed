@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import serializers
+from main.models import Feed,UserFeed
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,3 +21,14 @@ class UserSerializer(serializers.ModelSerializer):
         # it will create token automatically for each user
         token = Token.objects.create(user=user)
         return user
+
+
+class FeedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feed
+        fields = '__all__'
+
+class UserFeedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFeed
+        fields = '__all__'

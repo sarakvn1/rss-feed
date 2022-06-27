@@ -18,12 +18,22 @@ class Category(BaseModel):
 class Source(BaseModel):
     url = models.URLField()
     name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    last_modified = models.TextField(blank=True, null=True)
+    etag = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        unique_together = [('user', 'url')]
 
 
 class Feed(BaseModel):
+    source = models.ForeignKey(Source, on_delete=models.PROTECT)
     content = models.TextField()
     title = models.TextField()
-    published_time = models.DateTimeField("Created Time", auto_now_add=True)
+    published_time = models.DateTimeField("Published Time")
+    guid = models.TextField(blank=True, null=True, unique=True)
+    image = models.URLField(blank=True, null=True)
+    url = models.URLField(null=True)
 
 
 class UserFeed(BaseModel):
@@ -32,7 +42,9 @@ class UserFeed(BaseModel):
     is_read = models.BooleanField(default=False)
     is_bookmarked = models.BooleanField(default=False)
     is_starred = models.BooleanField(default=False)
-    url = models.URLField()
+
+    class Meta:
+        unique_together = [('user', 'feed')]
 
 
 class Comment(BaseModel):

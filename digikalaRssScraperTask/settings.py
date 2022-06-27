@@ -142,12 +142,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'trader.throttle.GlobalThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'global': environ.get('GLOBAL_THROTTLE', '5000/day'),
-    },
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 
 }
@@ -161,7 +155,7 @@ if USE_TZ:
     CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "do_scrapping": {
-        "task": "main.scrapper.do_scrapping_with_retry",
+        "task": "main.feed_parser.do_scrapping_with_retry",
         "schedule": timedelta(seconds=10),
         "options": {
             'expires': 10,
