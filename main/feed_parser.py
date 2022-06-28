@@ -14,6 +14,11 @@ class FeedParser:
     def __init__(self, source):
         self.source = source
 
+    @staticmethod
+    def generate_custom_guid(url, link, title):
+        hash_string = f"{url}{link}{title}"
+        return hash(hash_string)
+
     def get_feed_result(self, modified=None, etag=None):
 
         if modified is not None:
@@ -36,7 +41,7 @@ class FeedParser:
                 for entry in feed_result.entries:
                     guid = entry.get('id', entry.get('guid'))
                     if guid is None:
-                        guid = generate_custom_guid(self.source.get('url'), entry.link, entry.title)
+                        guid = self.generate_custom_guid(self.source.get('url'), entry.link, entry.title)
 
                     if 'image' in entry:
                         image_url = entry.image
@@ -89,43 +94,3 @@ class FeedParser:
         self.update_source(feed_result=feed_result)
         self.set_feed_entries(feed_result=feed_result)
 
-
-def check_rss_url():
-    url = 'https://news.ycombinator.com/rss'
-    try:
-        r = requests.get(url)
-        return r.status_code
-    except Exception as e:
-        print('The scraping job failed. See exception: ')
-        print(e)
-
-
-def generate_custom_guid(url, link, title):
-    hash_string = f"{url}{link}{title}"
-    return hash(hash_string)
-
-
-@celery_app.task()
-def do_feed_parse_with_retry():
-    try:
-
-            source_list = Source.objects.all().values('id', 'url', 'last_modified', 'etag', 'user')
-            # feedlist = ["https://freecodecamp.libsyn.com/rss", 'https://feeds.devpods.dev/devdiscuss_podcast.xml',
-            #             'https://jadi.net/rss']
-            for source in source_list:
-                fp = FeedParser(source=source)
-                modified = source.get('last_modified')
-                etag = source.get('etag')
-                feed_result = fp.get_feed_result(modified=modified, etag=etag)
-                fp.update_source(feed_result=feed_result)
-                fp.set_feed_entries(feed_result=feed_result)
-
-    except Exception as e:
-        logger.info(e.args)
-        logger.exception(e)
-
-
-def do_scrapping():
-    urls = Source.objects.all().values_list('url', flat=True)
-    for url in urls:
-        do_feed_parse_with_retry()

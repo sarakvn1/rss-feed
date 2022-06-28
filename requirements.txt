@@ -25,3 +25,7 @@ django-celery-beat==2.2.1
 flower==1.0.0
 feedparser==6.0.10
 
+pytest==6.2.3
+pytest-cov==2.11.1
+pytest-django==4.2.0
+pytest-mock==3.5.1
