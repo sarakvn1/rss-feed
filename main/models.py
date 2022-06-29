@@ -21,6 +21,7 @@ class Source(BaseModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     last_modified = models.TextField(blank=True, null=True)
     etag = models.CharField(max_length=200, blank=True, null=True)
+    category = models.ForeignKey(Category,on_delete=models.PROTECT)
 
     class Meta:
         unique_together = [('user', 'url')]
@@ -50,5 +51,5 @@ class UserFeed(BaseModel):
 class Comment(BaseModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     feed = models.ForeignKey(Feed, on_delete=models.PROTECT)
-    parent = models.ForeignKey('self', on_delete=models.PROTECT)
+    parent = models.ForeignKey('self', on_delete=models.PROTECT,null=True,blank=True)
     message = models.TextField()

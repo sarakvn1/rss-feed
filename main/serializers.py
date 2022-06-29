@@ -28,9 +28,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FeedSerializer(serializers.ModelSerializer):
+    # user_feed = serializers.SerializerMethodField()
+
     class Meta:
         model = Feed
         fields = '__all__'
+
+    # @staticmethod
+    # def get_user_feed(instance):
+    #     return instance.feed.content
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -66,7 +72,8 @@ class UserFeedSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {'is_read': {'required': False},
                         'is_bookmarked': {'required': False},
-                        'is_starred': {'required': False}
+                        'is_starred': {'required': False},
+
                         }
 
     @staticmethod

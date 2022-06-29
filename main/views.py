@@ -133,12 +133,27 @@ class UserFeedView(APIView):
             return Response("user-feed not found", status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
-    def post(request):
+    def put(request, pk):
+        try:
+            user = request.user.id
+            data = {"user": user}
+            user_feed = UserFeed.objects.get(id=pk)
+            serializer = UserFeedSerializer(user_feed, data={**data, **request.data}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except UserFeed.DoesNotExist:
+            return Response("user-feed not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class UserFeedListView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def get(request):
         user = request.user.id
-        data = {"user": user}
-        serializer = UserFeedSerializer(data={**data, **request.data})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        feed = UserFeed.objects.filter(user_id=user)
+        serializer = UserFeedSerializer(feed, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -147,14 +162,10 @@ class CommentView(APIView):
 
     @staticmethod
     def get(request, pk):
-        try:
-            user = request.user.id
+        feeds = Comment.objects.filter(feed_id=pk)
+        serializer = CommentSerializer(feeds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-            feeds = Comment.objects.filter(user_id=user, feed_id=pk)
-            serializer = CommentSerializer(feeds, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Comment.DoesNotExist:
-            return Response("comment not found", status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
     def post(request):

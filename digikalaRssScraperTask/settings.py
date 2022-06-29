@@ -50,8 +50,9 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'main',
     'django_celery_beat',
+    'main',
+
 ]
 
 MIDDLEWARE = [
@@ -160,26 +161,10 @@ if USE_TZ:
     CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "do_scrapping": {
-        "task": "main.feed_parser.do_scrapping_with_retry",
+        "task": "main.tasks.do_feed_parse_with_retry",
         "schedule": timedelta(seconds=10),
         "options": {
             'expires': 10,
         },
     },
-    # # update market
-    # "kucoin_ticker_crawler": {
-    #     "task": "market.crawler.kucoin_ticker_crawler",
-    #     "schedule": crontab(hour='3', minute='0'),
-    #     "options": {
-    #         'expires': 60 * 60,
-    #     },
-    # },
-    # # finish position
-    # "finish_positions": {
-    #     "task": "coordinator.tasks.finish_positions",
-    #     "schedule": timedelta(seconds=60),
-    #     "options": {
-    #         'expires': 30,
-    #     },
-    # },
 }
