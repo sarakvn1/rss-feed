@@ -17,7 +17,6 @@ COPY ["entrypoint.sh", "requirements.txt", "/"]
 # Install python packages
 RUN pip install -r requirements.txt
 
-RUN touch settings.env
 # Copy project files
 COPY [".", "/var/www"]
 
