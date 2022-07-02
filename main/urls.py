@@ -10,7 +10,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('test', TestView.as_view()),
     path('feed/<int:source>', FeedView.as_view()),
-    path('sources', SourceListView.as_view()),
+    path('sources/<int:pk>', SourceListView.as_view()),
     path('category/<int:pk>', CategoryView.as_view()),
     path('category', CategoryView.as_view()),
     path('categories', CategoryListView.as_view()),

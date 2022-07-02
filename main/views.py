@@ -78,9 +78,9 @@ class SourceListView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @staticmethod
-    def get(request):
+    def get(request, pk):
         user = request.user.id
-        feeds = Source.objects.filter(user_id=user)
+        feeds = Source.objects.filter(user_id=user, category__id=pk)
         serializer = SourceSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -165,7 +165,6 @@ class CommentView(APIView):
         feeds = Comment.objects.filter(feed_id=pk)
         serializer = CommentSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     @staticmethod
     def post(request):

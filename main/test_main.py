@@ -13,10 +13,12 @@ from main.models import UserFeed
 @pytest.mark.django_db
 def test_create_source_with_force_authentication_should_pass():
     user = baker.make('User', id=1, username="lauren")
+    baker.make('Category', id=1)
     client = APIClient()
     data = {
         "url": "https://jadi.net/rss",
-        "name": "jadi"
+        "name": "jadi",
+        "category":1
     }
     client.force_authenticate(user=user)
     response = client.post('/source', data=json.dumps(data), content_type='application/json')
@@ -75,9 +77,11 @@ def test_create_source_should_fail():
 @pytest.mark.django_db
 def test_get_source_list_with_force_authentication_should_pass():
     user = baker.make('User', id=1, username="lauren")
+    baker.make('Category', id=1,)
+    baker.make('Source', id=1,)
     client = APIClient()
     client.force_authenticate(user=user)
-    response = client.get('/sources', content_type='application/json')
+    response = client.get('/sources/1', content_type='application/json')
     logger.info(response.content)
     assert response.status_code == 200
 
