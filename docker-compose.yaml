@@ -1,0 +1,65 @@
+version: '3.3'
+
+services:
+   rss-feed:
+      image: rss-feed
+      build:
+        dockerfile: ./Dockerfile
+        context: .
+      container_name: rss-feed
+      restart: always
+      env_file:
+        - ./settings.env
+      depends_on:
+        - redis
+        - db
+      ports:
+        - "8080:8000"
+      command: ["uwsgi", "--callable", "application", "--wsgi-file", "./digikalaRssScraperTask/wsgi.py", "--processes=2", "--protocol=http", "-b 32768" ,  "--wsgi-disable-file-wrapper", "--socket-timeout=120"]
+      networks:
+        - rss-feed-network
+
+   rss-feed-worker:
+      image: rss-feed-worker
+      build:
+        dockerfile: ./Dockerfile
+        context: .
+      container_name: rss-feed-worker
+      restart: always
+      env_file:
+        - ./settings.env
+      depends_on:
+        - redis
+        - db
+      command: ["worker" , "-A" , "digikalaRssScraperTask" , "worker" , "-B" , "--loglevel=debug"]
+      networks:
+        - rss-feed-network
+
+   redis:
+      image: "redis:alpine"
+      container_name: redis
+      command: redis-server
+      ports:
+         - "6389:6379"
+      volumes:
+         - redis-data:/data
+      environment:
+         - REDIS_REPLICATION_MODE=master
+      networks:
+         - rss-feed-network
+   db:
+    image: mysql:8.0.29
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - rss-feed-network
+networks:
+  rss-feed-network:
+     driver: bridge
+
+volumes:
+  redis-data:
+  db-data:

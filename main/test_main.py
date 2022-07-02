@@ -451,8 +451,7 @@ def test_feed_parser_should_pass(mocker):
     s = {"id": 1, "url": "https://jadi.net/rss", "user": 1, "etag": None, "last_modified": None}
     mocker.patch('main.feed_parser.FeedParser.get_feed_result',
                  return_value=return_v)
-    user = baker.make('User', id=1)
-    # c = baker.make('Category', id=1, user_id=1)
+    baker.make('User', id=1)
 
     parser = do_feed_parse_with_retry()
     user_feed = UserFeed.objects.count()

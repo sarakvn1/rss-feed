@@ -36,7 +36,7 @@ SECRET_KEY = environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*,'
 
 # Application definition
 
@@ -90,13 +90,23 @@ WSGI_APPLICATION = 'digikalaRssScraperTask.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get("MYSQL_DATABASE"),
+            'USER': os.environ.get("MYSQL_USER"),
+            'PASSWORD': os.environ.get("MYSQL_PASSWORD"),
+            'HOST': 'db',  # docker-compose service name 'db' resolves to host name 'db'
+            'PORT': 3306
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -168,3 +178,4 @@ CELERY_BEAT_SCHEDULE = {
         },
     },
 }
+CORS_ALLOW_ALL_ORIGINS = True
