@@ -10,6 +10,20 @@ in his feeds and the ability to comment on a feed item.
 
 
 
+## Installation
+
+Install my-project
+
+
+```bash
+  mv settings.env.test settings.env
+  mv db.env.test db.env
+  docker-compose up -d 
+  chmode 775 ./migrate.sh
+  ./migrate.sh
+  
+```
+    
 
 
 ## API Reference

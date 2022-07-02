@@ -9,7 +9,7 @@ services:
       container_name: rss-feed
       restart: always
       env_file:
-        - ./settings.env
+        - settings.env
       depends_on:
         - redis
         - db
@@ -27,7 +27,7 @@ services:
       container_name: rss-feed-worker
       restart: always
       env_file:
-        - ./settings.env
+        - settings.env
       depends_on:
         - redis
         - db
@@ -59,7 +59,7 @@ services:
     networks:
       - rss-feed-network
     env_file:
-      - ./settings.env
+      - db.env
     expose:
       - "3306"
 
