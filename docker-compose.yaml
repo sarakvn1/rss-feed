@@ -47,15 +47,22 @@ services:
          - REDIS_REPLICATION_MODE=master
       networks:
          - rss-feed-network
+
    db:
     image: mysql:8.0.29
+    container_name: db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     restart: always
     volumes:
       - db-data:/var/lib/mysql
     networks:
       - rss-feed-network
+    env_file:
+      - ./settings.env
+    expose:
+      - "3306"
+
 networks:
   rss-feed-network:
      driver: bridge

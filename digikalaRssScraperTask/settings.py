@@ -103,8 +103,8 @@ DATABASES = {
             'NAME': os.environ.get("MYSQL_DATABASE"),
             'USER': os.environ.get("MYSQL_USER"),
             'PASSWORD': os.environ.get("MYSQL_PASSWORD"),
-            'HOST': 'db',  # docker-compose service name 'db' resolves to host name 'db'
-            'PORT': 3306
+            'HOST': environ.get("MYSQL_HOST"),  # docker-compose service name 'db' resolves to host name 'db'
+            'PORT': environ.get("MYSQL_PORT")
         }
     }
 # Password validation

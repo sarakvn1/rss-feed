@@ -10,6 +10,7 @@ RUN apt-get install -y python3 python3-pip python3-dev uwsgi uwsgi-plugin-python
         ca-certificates build-essential vim curl libffi-dev libssl-dev libxml2-dev \
         libxslt1-dev  && mkdir /var/www && rm -rf /var/cache/apt/*
 
+RUN apt-get install -y --no-install-recommends gcc libc-dev python3-dev default-libmysqlclient-dev
 # Copy requirenments
 COPY ["entrypoint.sh", "requirements.txt", "/"]
 
@@ -22,6 +23,7 @@ COPY [".", "/var/www"]
 
 RUN apt-get autoremove --purge -y python3-dev gcc && \
         chmod +x /entrypoint.sh && chown -R www-data. /var/www
+
 
 WORKDIR "/var/www"
 
