@@ -90,23 +90,23 @@ WSGI_APPLICATION = 'digikalaRssScraperTask.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ.get("MYSQL_DATABASE"),
-            'USER': os.environ.get("MYSQL_USER"),
-            'PASSWORD': os.environ.get("MYSQL_PASSWORD"),
-            'HOST': environ.get("MYSQL_HOST"),  # docker-compose service name 'db' resolves to host name 'db'
-            'PORT': environ.get("MYSQL_PORT")
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'NAME': os.environ.get("MYSQL_DATABASE"),
+#             'USER': os.environ.get("MYSQL_USER"),
+#             'PASSWORD': os.environ.get("MYSQL_PASSWORD"),
+#             'HOST': environ.get("MYSQL_HOST"),  # docker-compose service name 'db' resolves to host name 'db'
+#             'PORT': environ.get("MYSQL_PORT")
+#         }
+#     }
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
